@@ -4,63 +4,53 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
+using Ggross.Template;
 
-public class GameMain : MonoBehaviour
+
+public class GameMain : SingletonMonoBehaviour<GameMain>
 {
     private int currentLevel;
-
-    public static int row = 10, column = 20;
-    public static int cellSize = 80;
     public static int maxLevels = 5;
 
-    public const int CELL_WALL = 1, CELL_TRACE = 2, CELL_PLAYER = 3, CELL_GOAL = 4, BLANK = 0, END = -1;
-    public const int ARROW_DOWN = 5, ARROW_LEFT = 6, ARROW_UP = 7, ARROW_RIGHT = 8;
-    public const int CELL_EXPLODE = 9, CELL_STAR = -2;
-
-    public GameObject cellPrefab;
-
+    /*
     public Sprite sprite_player, sprite_wall, sprite_goal, sprite_star, sprite_explode, sprite_stop;
     public Sprite sprite_arrow_down, sprite_arrow_up, sprite_arrow_left, sprite_arrow_right;
-
-    public MapInfo mapInfo;
-
-    private int[,] mapPrefab,mapCurrent;
-    private CellScript [,] cellList;
-
-    private Vector2Int playerPos;
-    private enum DIRECTION { DOWN,UP,LEFT,RIGHT,STOP };
-    private DIRECTION dir = DIRECTION.STOP;
+    */
 
     private bool moving = false;
     private bool gaming = false, winning = false;
 
     private int stars = 0;
 
-    private Text msg;
+    [SerializeField] private Text msg;
+    
 
-    //public MapInfo testMap = new MapInfo(m1);
 
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        if(PlayerPrefs.HasKey("CurrentLevel"))
+        if (PlayerPrefs.HasKey("CurrentLevel"))
         {
             currentLevel = PlayerPrefs.GetInt("CurrentLevel");
         }
         Debug.Log(currentLevel);
 
-        mapPrefab = new int[column, row];
+        //mapPrefab = new int[column, row];
 
-        msg = GameObject.Find("TopMessage").GetComponent<Text>();
+        //msg = GameObject.Find("TopMessage").GetComponent<Text>();
         msg.gameObject .SetActive (false);
 
         //mapInfo = testMap;
-        DownloadMapInfo();
+        //DownloadMapInfo();
 
-        mapCurrent = new int[column, row];
+        //mapCurrent = new int[column, row];
 
-        CreateGrid();
+        //CreateGrid();
+
+        MapController.Instance.CreateCellObjects();
+        MapController.Instance.DownloadMapData(new MapData(MapData.m1));
 
         gaming = true;
     }
@@ -89,52 +79,53 @@ public class GameMain : MonoBehaviour
         };
 
 
-        if (!gaming) return;
+        if (!gaming || moving) return;
 
-        if (moving) return;
-
+        /*
         if(playerPos == mapInfo .goalPos )
         {
             Win();
             return;
         }
+        */
 
+        #region 玩家移动
         if(Input.GetKeyDown (KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            dir = DIRECTION.LEFT;StartCoroutine(Move());
+            MapController.Instance.MovePlayer(Config.DIRECTION.LEFT);
+            //dir = DIRECTION.LEFT;StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.S)||Input.GetKeyDown (KeyCode.DownArrow))
         {
-            dir = DIRECTION.DOWN; StartCoroutine(Move());
+            MapController.Instance.MovePlayer(Config.DIRECTION.DOWN);
+            //dir = DIRECTION.DOWN; StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
-            dir = DIRECTION.RIGHT; StartCoroutine(Move());
+            MapController.Instance.MovePlayer(Config.DIRECTION.RIGHT);
+            //dir = DIRECTION.RIGHT; StartCoroutine(Move());
         }
         else if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
         {
-            dir = DIRECTION.UP; StartCoroutine(Move());
+            MapController.Instance.MovePlayer(Config.DIRECTION.UP);
+            //dir = DIRECTION.UP; StartCoroutine(Move());
         }
+        #endregion
 
     }
 
     public void Restart()
     {
-        for(int i = 0; i < 20; i++)
-        {
-            for(int j = 0; j < 10; j++)
-            {
-                mapCurrent[i, j] = mapPrefab[i, j];
-                ChangeCellType(cellList[i, j], mapPrefab[i, j]);
-                playerPos = mapInfo.startPos;
+        
+        //TODO: 刷新方格
 
-            }
-        }
         stars = 0;
         moving = false;
         gaming = true;
         winning = false;
         msg.gameObject.SetActive(false);
+
+        MapController.Instance.Restart();
 
     }
     public void Quit()
@@ -146,6 +137,8 @@ public class GameMain : MonoBehaviour
         gaming = false;
         winning = true;
         msg.gameObject.SetActive(true);
+
+        //记录游戏进度
         WriteLevelInfo(currentLevel, (stars > 0) ? '2' : '1');
         WriteLevelInfo(currentLevel+1,  '1');
 
@@ -157,7 +150,7 @@ public class GameMain : MonoBehaviour
         if (currentLevel >= maxLevels) return;
         else
         {
-            DownloadMapInfo();
+            //DownloadMapInfo();
             Restart();
         }
     }
@@ -186,10 +179,11 @@ public class GameMain : MonoBehaviour
         }
     }
 
+    /*
     public IEnumerator Move()
     {
         moving = true;
-        CellScript next = GetNextCell();
+        CellObject next = GetNextCell();
         while (next != null && moving)
         {
 
@@ -230,13 +224,14 @@ public class GameMain : MonoBehaviour
 
         yield return null;
     }
-
-    public CellScript GetPlayer()
+    */
+    /*
+    public CellObject GetPlayer()
     {
         return cellList[playerPos.x, playerPos.y];
     }
-
-
+    */
+    /*
     public int GetNextCellType()
     {
         if(dir == DIRECTION.STOP)
@@ -261,8 +256,9 @@ public class GameMain : MonoBehaviour
 
         return END;
     }
-
-    public CellScript GetNextCell()
+    */
+    /*
+    public CellObject GetNextCell()
     {
 
         if (dir == DIRECTION.STOP)
@@ -287,30 +283,31 @@ public class GameMain : MonoBehaviour
 
         return null;
     }
-
-    public void MoveOneCell(CellScript next)
+    */
+    /*
+    public void MoveOneCell(CellObject next)
     {
-        CellScript player = cellList[playerPos.x, playerPos.y];
+        CellObject player = cellList[playerPos.x, playerPos.y];
 
         ChangeCellType(player, CELL_TRACE );
         ChangeCellType(next, CELL_PLAYER);
         playerPos = next.pos;
         UploadCurrentMap();
     }
-
-
+    */
+    /*
     public void CreateGrid()
     {
-        cellList = new CellScript [column,row];
+        cellList = new CellObject [column,row];
 
         for(int i = 0; i < column; i++)
         {
             for(int j = 0; j < row; j++)
             {
-                GameObject newCell = Instantiate(cellPrefab, GameObject .Find("Board").transform );
+                GameObject newCell = Instantiate(cellPrefab, grid );
                 newCell.name = new Vector2(i, j) + "";
                 
-                CellScript cs = newCell.GetComponent<CellScript>();
+                CellObject cs = newCell.GetComponent<CellObject>();
 
                 cs.SetPosition(i, j);
                 ChangeCellType(cs, mapPrefab[i, j]);
@@ -321,24 +318,12 @@ public class GameMain : MonoBehaviour
 
         UploadCurrentMap();
     }
-
-    public void UploadCurrentMap()
-    {
-        for(int i = 0;i<20; i++)
-        {
-            for(int j = 0; j < 10; j++)
-            {
-                CellScript cs = cellList[i,j];
-                mapCurrent[cs.x, cs.y] = cs.type;
-            }
-            
-        }
-    }
-
+    */
+    /*
     public void DownloadMapInfo()
     {
 
-        mapInfo = MapInfo.GetMapInfo(currentLevel);
+        mapInfo = MapData.GetMapInfo(currentLevel);
 
         for(int i =0;i<mapInfo.map.Length; i++)
         {
@@ -350,8 +335,9 @@ public class GameMain : MonoBehaviour
         playerPos = mapInfo.startPos;
         
     }
-
-    public void ChangeCellType(CellScript cs,int t)
+    */
+    /*
+    public void ChangeCellType(CellObject cs,int t)
     {
         cs.type = t;
         //cs.button.interactable = false;
@@ -412,6 +398,7 @@ public class GameMain : MonoBehaviour
 
         }
     }
+    */
 
     
 }

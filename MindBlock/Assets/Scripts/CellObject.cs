@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CellScript : MonoBehaviour
+public class CellObject : MonoBehaviour
 {
     public int x, y;
     public Vector2Int pos;
 
-    public int type;
+    public Config.CELL_TYPE type;
 
     public Image image;
 
@@ -24,7 +24,7 @@ public class CellScript : MonoBehaviour
         this.y = y;
         this.pos = new Vector2Int(x, y);
 
-        image.GetComponent<RectTransform>().anchoredPosition = new Vector2(x*80, y*80);
+        image.GetComponent<RectTransform>().anchoredPosition = new Vector2(x*Config.CELL_SIZE, y*Config.CELL_SIZE);
     }
 
     public void SetPosition(Vector2Int p)
