@@ -16,7 +16,7 @@ public class Config
 
     }
 
-    public const float MOVE_CELL_INTERVAL = 0.1f;
+    public const float MOVE_CELL_INTERVAL = 0.05f;
 
     public const int MAX_ROW = 20, MAX_COLUMN = 10;
 

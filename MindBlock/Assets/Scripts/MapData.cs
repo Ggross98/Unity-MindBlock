@@ -135,8 +135,7 @@ public class MapData
 
     }
 
-    public static List<int[,]> testMapList = new List<int[,]>(){ m0, m1, m2, m3, m4, m5 };
-
+    
     #region test maps
     public static int[,] m0 = {
         { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -217,5 +216,6 @@ public class MapData
 
     };
     #endregion
+    public static List<int[,]> testMapList = new List<int[,]>() { m0, m1, m2, m3, m4, m5 };
 
 }

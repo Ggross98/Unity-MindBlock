@@ -52,7 +52,7 @@ namespace Ggross.Template {
  
         public void OnDestroy()
         {
-            applicationIsQuitting = true;
+            //applicationIsQuitting = true;
         }
         
     }

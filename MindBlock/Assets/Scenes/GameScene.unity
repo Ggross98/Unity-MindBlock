@@ -808,13 +808,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 377e9ba3fd670cb4fa268bb24e4cf5f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sprite_player: {fileID: 21300000, guid: f48b6ccbda2a89f478d6c3f1f5464dd9, type: 3}
-  sprite_wall: {fileID: 21300000, guid: 007d338bcc9ace34abee29cda55c022f, type: 3}
-  sprite_goal: {fileID: 21300000, guid: f48b6ccbda2a89f478d6c3f1f5464dd9, type: 3}
-  sprite_star: {fileID: 21300000, guid: f6a0a7aa69c2d764ebd1539c10890574, type: 3}
-  sprite_explode: {fileID: 21300000, guid: b14e34249524ab44ba39074cf8fa3126, type: 3}
-  sprite_end: {fileID: 21300000, guid: 740ced962331d6140a2aa7944b85b0c2, type: 3}
-  sprite_trace: {fileID: 21300000, guid: 007d338bcc9ace34abee29cda55c022f, type: 3}
+  sprite_player: {fileID: 21300000, guid: b237d8e4fd31a2d40afeb129b8e61f9a, type: 3}
+  sprite_wall: {fileID: 21300000, guid: 5954fee5de326774590e0fac935b13b2, type: 3}
+  sprite_goal: {fileID: 21300000, guid: 7c8e700318129ad4c8f11d756aefd905, type: 3}
+  sprite_star: {fileID: 21300000, guid: 7bb8ab439bd12ee44b32cc969b20eac6, type: 3}
+  sprite_explode: {fileID: 21300000, guid: aafcdfef939f8d9458d9f40be2c62aee, type: 3}
+  sprite_end: {fileID: 21300000, guid: c109b1c94d734614bb88962fbbd55c91, type: 3}
+  sprite_trace: {fileID: 21300000, guid: 5954fee5de326774590e0fac935b13b2, type: 3}
 --- !u!4 &2113099015
 Transform:
   m_ObjectHideFlags: 0

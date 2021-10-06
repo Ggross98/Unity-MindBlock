@@ -43,22 +43,23 @@ public class MapController : SingletonMonoBehaviour<MapController>
         switch (type)
         {
             case Config.CELL_TYPE.BLANK:
-                obj.image.color = new Color(0, 0, 0, 0.2f);
+                obj.image.color = GetColor(0,0,0,20);
                 break;
 
             case Config.CELL_TYPE.PLAYER:
-                obj.image.color = new Color(106f / 255f, 90f / 255f, 205f / 255f, 1);
+                obj.image.color = GetColor(46, 139, 87);
                 //obj.button.colors = cb;
                 break;
 
             case Config.CELL_TYPE.WALL:
-                obj.image.color = new Color(70f / 255f, 130f / 255f, 180f / 255f, 1);
+                obj.image.color = GetColor(178, 46, 96);
+                
                 break;
             case Config.CELL_TYPE.GOAL:
                 obj.image.color = Color.yellow;
                 break;
             case Config.CELL_TYPE.TRACE:
-                obj.image.color = new Color(255f / 255f, 228f / 255f, 180f / 255f, 1);
+                obj.image.color = GetColor(255, 169, 119);
                 break;
             /*case ARROW_DOWN:
                 obj.image.sprite = sprite_arrow_down;
@@ -81,7 +82,7 @@ public class MapController : SingletonMonoBehaviour<MapController>
                 break;
 
             case Config.CELL_TYPE.STAR:
-                obj.image.color = Color.yellow;
+                obj.image.color = Color.magenta;
                 break;
 
         }
@@ -89,10 +90,16 @@ public class MapController : SingletonMonoBehaviour<MapController>
 
     }
 
+    public Color GetColor(int r, int g, int b, int a = 100)
+    {
+        return new Color(r / 255f, g / 255f, g / 255f, a / 100f);
+    }
+
     public void MovePlayer(Config.DIRECTION dir)
     {
-        this.dir = dir;
+        if (moving) return;
 
+        this.dir = dir;
         StartCoroutine(MoveCoroutine());
     }
 
@@ -228,6 +235,8 @@ public class MapController : SingletonMonoBehaviour<MapController>
             {
                 case Config.CELL_TYPE.STAR:
                     //stars++;
+                    GameMain.Instance.Star();
+
                     MoveOneCell(next);
                     next = GetNextCellObject();
                     break;
@@ -242,6 +251,9 @@ public class MapController : SingletonMonoBehaviour<MapController>
                     ChangeCellType(cellList[playerPos.x, playerPos.y], Config.CELL_TYPE.TRACE);
                     playerPos = next.pos;
                     moving = false;
+
+                    GameMain.Instance.Win();
+
                     break;
 
                 default:
@@ -258,6 +270,8 @@ public class MapController : SingletonMonoBehaviour<MapController>
         if (next == null)
         {
             ChangeCellType(cellList[playerPos.x, playerPos.y], Config.CELL_TYPE.END);
+
+            GameMain.Instance.Dead();
 
             //gaming = false;
         }

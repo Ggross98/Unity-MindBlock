@@ -17,7 +17,7 @@ public class GameMain : SingletonMonoBehaviour<GameMain>
     public Sprite sprite_arrow_down, sprite_arrow_up, sprite_arrow_left, sprite_arrow_right;
     */
 
-    private bool moving = false;
+    //private bool moving = false;
     private bool gaming = false, winning = false;
 
     private int stars = 0;
@@ -35,6 +35,10 @@ public class GameMain : SingletonMonoBehaviour<GameMain>
         {
             currentLevel = PlayerPrefs.GetInt("CurrentLevel");
         }
+        else
+        {
+            currentLevel = 0;
+        }
         Debug.Log(currentLevel);
 
         //mapPrefab = new int[column, row];
@@ -49,8 +53,10 @@ public class GameMain : SingletonMonoBehaviour<GameMain>
 
         //CreateGrid();
 
+        //while (MapController.Instance == null) { }
+
         MapController.Instance.CreateCellObjects();
-        MapController.Instance.DownloadMapData(new MapData(MapData.m1));
+        MapController.Instance.DownloadMapData(MapData.GetMapData(currentLevel));
 
         gaming = true;
     }
@@ -79,7 +85,7 @@ public class GameMain : SingletonMonoBehaviour<GameMain>
         };
 
 
-        if (!gaming || moving) return;
+        if (!gaming) return;
 
         /*
         if(playerPos == mapInfo .goalPos )
@@ -117,10 +123,8 @@ public class GameMain : SingletonMonoBehaviour<GameMain>
     public void Restart()
     {
         
-        //TODO: 刷新方格
-
         stars = 0;
-        moving = false;
+        //moving = false;
         gaming = true;
         winning = false;
         msg.gameObject.SetActive(false);
@@ -154,6 +158,16 @@ public class GameMain : SingletonMonoBehaviour<GameMain>
             Restart();
         }
     }
+
+    public void Dead()
+    {
+        gaming = false;
+    }
+
+    public void Star()
+    {
+        stars++;
+    }
     
 
     public void WriteLevelInfo(int level, char state)
@@ -178,227 +192,5 @@ public class GameMain : SingletonMonoBehaviour<GameMain>
             Debug.LogError("Doesn't have the correct key!");
         }
     }
-
-    /*
-    public IEnumerator Move()
-    {
-        moving = true;
-        CellObject next = GetNextCell();
-        while (next != null && moving)
-        {
-
-            switch(next.type)
-            {
-                case CELL_STAR:
-                    stars++;
-                    MoveOneCell(next);
-                    next = GetNextCell();
-                    break;
-                case BLANK:
-                    MoveOneCell(next);
-                    next = GetNextCell();
-                    break;
-
-                case CELL_GOAL:
-                    
-                    ChangeCellType(GetPlayer(), CELL_TRACE);
-                    playerPos = next.pos;
-                    moving = false;
-                    break;
-
-                default:
-                    moving = false;
-                    break;
-            }
-            
-            yield return new WaitForSeconds(0.02f);
-        }
-        dir = DIRECTION.STOP;
-        moving = false;
-
-        if(next == null)
-        {
-            ChangeCellType(cellList[playerPos.x, playerPos.y], END);
-            gaming = false;
-        }
-
-        yield return null;
-    }
-    */
-    /*
-    public CellObject GetPlayer()
-    {
-        return cellList[playerPos.x, playerPos.y];
-    }
-    */
-    /*
-    public int GetNextCellType()
-    {
-        if(dir == DIRECTION.STOP)
-        {
-            return CELL_PLAYER;
-        }
-        int x = playerPos.x;
-        int y = playerPos.y;
-
-        if((dir == DIRECTION.DOWN && y<=0)
-            ||(dir == DIRECTION.UP && y >= 9)
-            ||(dir == DIRECTION.LEFT && x <= 0)
-            ||(dir == DIRECTION.RIGHT && x >= 19))
-        {
-            return END;
-        }
-
-        if (dir == DIRECTION.DOWN) return mapCurrent[x, y - 1];
-        if (dir == DIRECTION.UP) return mapCurrent[x, y + 1];
-        if (dir == DIRECTION.LEFT) return mapCurrent[x-1, y];
-        if (dir == DIRECTION.RIGHT) return mapCurrent[x+1, y];
-
-        return END;
-    }
-    */
-    /*
-    public CellObject GetNextCell()
-    {
-
-        if (dir == DIRECTION.STOP)
-        {
-            return null;
-        }
-        int x = playerPos.x;
-        int y = playerPos.y;
-
-        if ((dir == DIRECTION.DOWN && y <= 0)
-            || (dir == DIRECTION.UP && y >= 9)
-            || (dir == DIRECTION.LEFT && x <= 0)
-            || (dir == DIRECTION.RIGHT && x >= 19))
-        {
-            return null;
-        }
-
-        if (dir == DIRECTION.DOWN) return cellList [x, y - 1];
-        if (dir == DIRECTION.UP) return cellList[x, y + 1];
-        if (dir == DIRECTION.LEFT) return cellList[x - 1, y];
-        if (dir == DIRECTION.RIGHT) return cellList[x + 1, y];
-
-        return null;
-    }
-    */
-    /*
-    public void MoveOneCell(CellObject next)
-    {
-        CellObject player = cellList[playerPos.x, playerPos.y];
-
-        ChangeCellType(player, CELL_TRACE );
-        ChangeCellType(next, CELL_PLAYER);
-        playerPos = next.pos;
-        UploadCurrentMap();
-    }
-    */
-    /*
-    public void CreateGrid()
-    {
-        cellList = new CellObject [column,row];
-
-        for(int i = 0; i < column; i++)
-        {
-            for(int j = 0; j < row; j++)
-            {
-                GameObject newCell = Instantiate(cellPrefab, grid );
-                newCell.name = new Vector2(i, j) + "";
-                
-                CellObject cs = newCell.GetComponent<CellObject>();
-
-                cs.SetPosition(i, j);
-                ChangeCellType(cs, mapPrefab[i, j]);
-
-                cellList[i, j] = cs ;
-            }
-        }
-
-        UploadCurrentMap();
-    }
-    */
-    /*
-    public void DownloadMapInfo()
-    {
-
-        mapInfo = MapData.GetMapInfo(currentLevel);
-
-        for(int i =0;i<mapInfo.map.Length; i++)
-        {
-            int x = i % 20;
-            int y = 9 - (i / 20);
-
-            mapPrefab[x, y] = mapInfo.map[i];
-        }
-        playerPos = mapInfo.startPos;
-        
-    }
-    */
-    /*
-    public void ChangeCellType(CellObject cs,int t)
-    {
-        cs.type = t;
-        //cs.button.interactable = false;
-
-        switch (t)
-        {
-            case BLANK:
-
-                cs.image.sprite  = sprite_wall;
-                cs.image.color = new Color(0,0,0,0.2f);
-                break;
-
-            case CELL_PLAYER:
-                cs.image.sprite = sprite_player;
-                cs.image.color = new Color(106f/255f,90f/255f,205f/255f,1);
-                //cs.button.colors = cb;
-                break;
-
-            case CELL_WALL:
-                cs.image.sprite = sprite_wall;
-
-                cs.image.color = new Color(70f/255f, 130f/255f, 180f/255f,1);
-                break;
-            case CELL_GOAL:
-                cs.image.sprite = sprite_player;
-
-                cs.image.color = Color.yellow ;
-                break;
-            case CELL_TRACE:
-                cs.image.sprite = sprite_wall;
-                cs.image.color = new Color(255f / 255f, 228f / 255f, 180f / 255f, 1);
-                break;
-            case ARROW_DOWN:
-                cs.image.sprite = sprite_arrow_down;
-                cs.image.color = new Color();
-                break;
-            case ARROW_LEFT:
-                cs.image.sprite = sprite_arrow_left;
-                cs.image.color = new Color();
-                break;
-            case ARROW_UP:
-                cs.image.sprite = sprite_arrow_up;
-                cs.image.color = new Color();
-                break;
-            case ARROW_RIGHT:
-                cs.image.sprite = sprite_arrow_right;
-                cs.image.color = new Color();
-                break;
-            case END:
-                cs.image.sprite = sprite_stop;
-                cs.image.color = Color.red ;
-                break;
-
-            case CELL_STAR:
-                cs.image.sprite = sprite_star;
-                cs.image.color = Color.yellow ;
-                break;
-
-        }
-    }
-    */
-
     
 }
